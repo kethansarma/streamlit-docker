@@ -108,12 +108,14 @@ for seconds in range(200):
             fig = px.density_heatmap(
                 data_frame=df, y="age_new", x="marital"
             )
-            st.write(fig)
+            st.plotly_chart(fig, use_container_width=True) 
+            # st.write(fig)
             
         with fig_col2:
             st.markdown("### Second Chart")
             fig2 = px.histogram(data_frame=df, x="age_new")
-            st.write(fig2)
+            # st.write(fig2)
+            st.plotly_chart(fig2, use_container_width=True) 
 
         st.markdown("### Detailed Data View")
         st.dataframe(df)
