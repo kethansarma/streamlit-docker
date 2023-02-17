@@ -103,19 +103,33 @@ for seconds in range(200):
 
         # create two columns for charts
         fig_col1, fig_col2 = st.columns(2)
+        # fig_col1 = st.columns(1)
         with fig_col1:
             st.markdown("### First Chart")
-            fig = px.density_heatmap(
-                data_frame=df, y="age_new", x="marital"
-            )
+            # fig = px.line(data_frame=df, x=df.index, y="age_new", color='martial')
+    
+            
+            d = dict(
+                                x = [1, 2, 3, 4, 5],
+                                y = [1, 2, 3, 4],
+                                z = [2, 4, 3, 6, 8]
+                            )
+            df2 = pd.DataFrame(dict([ (k,pd.Series(v)) for k,v in d.items() ]))
+            # df2 = pd.DataFrame()
+            fig = px.line(df2, x="x", y=["y","z"], title="Unsorted Input")
+            fig.update_traces(showlegend=False)
+            # fig = px.line(df2, x="x", y="y", title="Unsorted Input")
+            # fig = px.density_heatmap(
+            #     data_frame=df, y="age_new", x="marital"
+            # )
             st.plotly_chart(fig, use_container_width=True) 
             # st.write(fig)
             
-        with fig_col2:
-            st.markdown("### Second Chart")
-            fig2 = px.histogram(data_frame=df, x="age_new")
-            # st.write(fig2)
-            st.plotly_chart(fig2, use_container_width=True) 
+        # with fig_col2:
+        #     st.markdown("### Second Chart")
+        #     fig2 = px.histogram(data_frame=df, x="age_new")
+        #     # st.write(fig2)
+        #     st.plotly_chart(fig2, use_container_width=True) 
 
         st.markdown("### Detailed Data View")
         st.dataframe(df)
