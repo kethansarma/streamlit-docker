@@ -37,8 +37,8 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 default_date_range = [datetime(2015, 1, 8), now]
 def mean_absolute_percentage_error(y_true, y_pred): 
     y_true, y_pred = np.array(y_true), np.array(y_pred)
-    return np.abs((y_true - y_pred) / y_true) * 100
-    # return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
+    # np.abs((y_true - y_pred) / y_true) * 100
+    return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 def set_date_range(date_range) -> list:
     """Set Date Range
     Returns:
@@ -66,8 +66,8 @@ def set_date_range(date_range) -> list:
 def get_data(date_range) -> pd.DataFrame:
     assert len(date_range) == 2
     dates  = pd.read_csv('AESO_data.csv', index_col=1, parse_dates=['date_time'])
-    dates["mape_price"] = dates.apply(lambda x: mean_absolute_percentage_error(x.ACTUAL_POOL_PRICE, x.Forecasted_Price), axis=1)
-    dates["mape_load"] = dates.apply(lambda x: mean_absolute_percentage_error(x.ACTUAL_LOAD, x.Forecasted_load), axis=1)
+    # dates["mape_price"] = dates.apply(lambda x: mean_absolute_percentage_error(x.ACTUAL_POOL_PRICE, x.Forecasted_Price), axis=1)
+    # dates["mape_load"] = dates.apply(lambda x: mean_absolute_percentage_error(x.ACTUAL_LOAD, x.Forecasted_load), axis=1)
     # dates["ACTUAL_POOL_PRICE"] + 0.1 * dates["ACTUAL_POOL_PRICE"]
     # dates["Forecasted_load"] = dates["load"] + 0.2 * dates["load"]
     dates = dates.loc[(dates.index > date_range[0] ) & (dates.index <= date_range[1])]
@@ -131,11 +131,11 @@ df_forecast = get_data(forecast_date_range)
 placeholder = padding1.empty()
 
 # creating KPIs
-avg_load = np.mean(df_forecast["ACTUAL_LOAD"][-24:])
-avg_load_mape = np.mean(df_forecast["mape_load"][-24:])
+avg_load = np.mean(df_forecast["ACTUAL_LOAD"][-4:])
+load_mape = mean_absolute_percentage_error(df_forecast["ACTUAL_LOAD"][-4:], df_forecast["Forecasted_load"][-4:])
 
-avg_price = np.mean(df_forecast["ACTUAL_POOL_PRICE"][-24:])
-avg_price_mape = np.mean(df_forecast["mape_price"][-24:])
+avg_price = np.mean(df_forecast["ACTUAL_POOL_PRICE"][-4:])
+price_mape = mean_absolute_percentage_error(df_forecast["ACTUAL_POOL_PRICE"][-4:], df_forecast["Forecasted_Price"][-4:])
 
 with placeholder.container():
     # st.markdown('###') 
@@ -151,7 +151,7 @@ with placeholder.container():
     
     kpi2.metric(
         label="MAPE_Load %",
-        value=f"{round(avg_load_mape,2)} % "
+        value=f"{round(load_mape,2)} % "
         # delta=round(-10 + wind_speed),
     )
     
@@ -163,7 +163,7 @@ with placeholder.container():
 
     kpi4.metric(
         label="MAPE_Price %",
-        value=f"{round(avg_price_mape,2)} % "
+        value=f"{round(price_mape,2)} % "
         # delta=-round(avg_price),
     )
     # st.write("## Plots")
@@ -217,7 +217,7 @@ with fig_col2:
     df2 = pd.DataFrame(d)
     fig = px.line(df2, x=df2.index, y=["Forecasted_Load","ACTUAL_LOAD"],
                             # custom_data=["Forecasted_Price","ACTUAL_POOL_PRICE"],
-                            title="Price")
+                            title="Load")
     newnames = {'Forecasted_Load':'Forecast', 'ACTUAL_LOAD': 'Actual'}
     fig.for_each_trace(lambda t: t.update(name = newnames[t.name],
                                     legendgroup = newnames[t.name],
